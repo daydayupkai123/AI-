@@ -1,0 +1,43 @@
+# 大模型配置 —— 修改后无需重启，下一次调用自动生效
+#
+# providers：可用的模型服务。type 支持：
+#   ollama  —— Ollama 原生接口（/api/chat），支持 think 深度思考开关
+#   openai  —— OpenAI 兼容接口（/chat/completions），DeepSeek、硅基流动、vLLM、私有化部署等
+# api_key 支持 ${环境变量} 写法，密钥不要直接写进本文件。
+
+providers:
+  ollama_local:
+    type: ollama
+    base_url: http://127.0.0.1:11434
+    model: qcwind/qwen3-8b-instruct-Q4-K-M:latest   # 本机 D:\Model 中已有；也可换 qwen2.5-coder:7b-instruct-q4_K_M
+    think: true            # 输出深度思考过程（qwen3 / deepseek-r1 等支持）
+    temperature: 0.6
+    timeout: 300
+    options:
+      num_ctx: 8192
+
+  deepseek:
+    type: openai
+    base_url: https://api.deepseek.com/v1
+    api_key: ${DEEPSEEK_API_KEY}
+    model: deepseek-chat
+    temperature: 0.5
+    timeout: 120
+
+  siliconflow:
+    type: openai
+    base_url: https://api.siliconflow.cn/v1
+    api_key: ${SILICONFLOW_API_KEY}
+    model: Qwen/Qwen3-8B
+    temperature: 0.5
+    timeout: 120
+
+# 各用途使用哪个 provider（对话 / 字段抽取 / 语义规则判定）
+roles:
+  chat: ollama_local
+  extract: ollama_local
+  judge: ollama_local
+
+# 对话只做任务入口与报告追问（不闲聊）：没有当前报告时不调模型，固定回复可执行的任务
+chat:
+  max_history: 12        # 报告追问时带入上下文的最近消息条数

@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AI 数字员工工作台</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+<div class="app" id="app">
+  <nav class="rail" id="rail"></nav>
+
+  <aside class="side">
+    <div class="side-head">
+      <span class="side-title">对话</span>
+      <button class="icon-btn" id="btn-collapse" title="收起侧栏">
+        <svg viewBox="0 0 24 24"><path d="M11 17l-5-5 5-5M18 17l-5-5 5-5"/></svg>
+      </button>
+    </div>
+    <div class="side-search">
+      <label class="search-box">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M20 20l-4-4"/></svg>
+        <input id="search" placeholder="搜索会话、数字员工" />
+      </label>
+      <button class="icon-btn plus" id="btn-new" title="新对话">
+        <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+    </div>
+    <div class="side-list" id="employee-list"></div>
+  </aside>
+
+  <main class="main">
+    <section id="view-welcome" class="welcome">
+      <div class="welcome-center">
+        <div class="hello" id="hello"></div>
+        <h1>欢迎来到 AI 数字员工工作台</h1>
+        <p class="sub">数字员工按流程自动完成采购、合同、三会与报销的初审：资料提前采集入库，审查全程留档可追溯</p>
+        <div class="cards" id="cards"></div>
+        <button class="ctr-entry" id="btn-center">
+          <svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5.5" r="2"/><circle cx="19" cy="18.5" r="2"/><path d="M7 12h4l6-6.5M11 12l6 6.5"/></svg>
+          <span><b>资料中心全流程</b>采集 → 签名入库 → 解析 / OCR → 自动审查 → 执行档案，逐步演示</span>
+          <svg class="go" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+      <div class="dock">
+        <div class="quick" id="welcome-chips"></div>
+        <div class="composer" id="welcome-composer">
+          <textarea id="welcome-input" rows="2" placeholder="输入单号或本地样例编号，发送后自动开启新对话（例如 1674771、DEMO-HT-001、DEMO-BX-001）"></textarea>
+          <div class="composer-bar">
+            <button class="tool" data-act="queue"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></svg>待审单据</button>
+            <button class="tool" data-act="samples"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>样例单据</button>
+            <button class="tool" data-act="rules"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>规则清单</button>
+            <button class="tool" data-act="history"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>历史报告</button><button class="tool" data-act="flow"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5.5" r="2"/><circle cx="19" cy="18.5" r="2"/><path d="M7 12h4l6-6.5M11 12l6 6.5"/></svg>全流程</button>
+            <span class="grow"></span>
+            <span class="kbd">Enter 发送</span>
+            <button class="send" id="welcome-send" title="发送"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-chat" class="chat hidden">
+      <header class="chat-head">
+        <div class="chat-who" id="chat-who"></div>
+        <div class="chat-actions">
+          <span class="llm-chip" id="llm-chip" title="对话所用大模型（config/llm.yaml）"><i></i><span>模型检测中</span></span>
+          <button class="icon-btn" data-act="flow" title="资料中心全流程"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5.5" r="2"/><circle cx="19" cy="18.5" r="2"/><path d="M7 12h4l6-6.5M11 12l6 6.5"/></svg></button>
+          <button class="icon-btn" data-act="queue" title="待审单据"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></svg></button>
+          <button class="icon-btn" data-act="rules" title="规则清单"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg></button>
+          <button class="icon-btn" data-act="history" title="历史报告"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg></button>
+          <button class="icon-btn" id="btn-newchat" title="新对话"><svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg></button>
+        </div>
+        <div class="history-pop hidden" id="history-pop"></div>
+      </header>
+      <div class="messages" id="messages"><div class="thread" id="thread"></div></div>
+      <button class="to-latest hidden" id="to-latest"><svg viewBox="0 0 24 24"><path d="M12 5v14M6 13l6 6 6-6"/></svg>回到最新</button>
+      <div class="dock chat-dock">
+        <div class="composer">
+          <textarea id="chat-input" rows="1" placeholder="输入单号发起审查，或就当前报告提问；Enter 发送"></textarea>
+          <div class="composer-bar">
+            <button class="tool" data-act="queue"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h10"/><circle cx="19" cy="18" r="2"/></svg>待审单据</button>
+            <button class="tool" data-act="samples"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>样例单据</button>
+            <button class="tool" data-act="rules"><svg viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4 6h.01M4 12h.01M4 18h.01"/></svg>规则清单</button>
+            <button class="tool" data-act="history"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 8v4l3 2"/></svg>历史报告</button><button class="tool" data-act="flow"><svg viewBox="0 0 24 24"><circle cx="5" cy="12" r="2"/><circle cx="19" cy="5.5" r="2"/><circle cx="19" cy="18.5" r="2"/><path d="M7 12h4l6-6.5M11 12l6 6.5"/></svg>全流程</button>
+            <span class="grow"></span>
+            <button class="send" id="chat-send" title="发送"><svg viewBox="0 0 24 24"><path d="M12 19V5M6 11l6-6 6 6"/></svg></button>
+          </div>
+        </div>
+        <div class="hint">内容由 AI 数字员工生成，仅读取单据并输出分析报告，不做任何审批操作，结论供审核人参考</div>
+      </div>
+    </section>
+
+    <section id="view-flows" class="center hidden">
+      <header class="ctr-head">
+        <div>
+          <h2>流程与规则</h2>
+          <p>每个数字员工走哪些节点、规则在哪个节点执行、依赖哪些节点的数据，与需求方案逐步对照；规则可配置，发布后下一次审查生效</p>
+        </div>
+        <div class="ctr-acts" id="fl-emps"></div>
+      </header>
+      <div class="ctr-body" id="fl-body"></div>
+      <div class="ctr-mask hidden" id="fl-mask"></div>
+      <aside class="ctr-drawer hidden" id="fl-drawer" aria-label="规则配置"></aside>
+    </section>
+
+    <section id="view-center" class="center hidden">
+      <header class="ctr-head">
+        <div>
+          <h2>资料中心 · 全流程</h2>
+          <p>只读客户系统 → 采集登记 → 原件签名入库 → 解析 / OCR → 自动审查 → 执行档案，每一步可追溯</p>
+        </div>
+        <div class="ctr-acts">
+          <select id="ctr-emp" aria-label="按数字员工筛选"></select>
+          <button class="btn" id="ctr-refresh">刷新</button>
+          <button class="btn" id="ctr-collect">立即采集</button>
+          <button class="btn primary" id="ctr-back">返回工作台</button>
+        </div>
+      </header>
+      <div class="ctr-body" id="ctr-body"></div>
+      <div class="ctr-mask hidden" id="ctr-mask"></div>
+      <aside class="ctr-drawer hidden" id="ctr-drawer" aria-label="单据全流程"></aside>
+    </section>
+  </main>
+</div>
+<div class="toast hidden" id="toast"></div>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+{
+ "state": "ok",
+ "message": "",
+ "special": "",
+ "vipMessage": "",
+ "isLogin": 0,
+ "errorCode": 0,
+ "data": {
+  "acList": [
+   {
+    "humanId": 1815995903,
+    "companyId": 6815676713,
+    "type": 2,
+    "name": "刘翠萍",
+    "logo": null,
+    "count": 1,
+    "alias": null,
+    "hpid": "U0E2UMJ0AVF25HYBB",
+    "serviceType": 1,
+    "serviceCount": 1,
+    "shareHoldingRatio": "99%",
+    "finalProfitShare": "99%",
+    "indirectPercent": "-",
+    "votingRights": "99%"
+   }
+  ],
+  "acpList": [],
+  "acPNoList": [
+   {
+    "name": "无实际控制人",
+    "type": "公示信息"
+   }
+  ],
+  "shareholderList": [],
+  "suspectedList": [],
+  "announceList": [],
+  "count": 1,
+  "type": 1,
+  "votingRights": "",
+  "reasonOutside": "",
+  "modelJson": null
+ }
+}

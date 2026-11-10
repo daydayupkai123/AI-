@@ -1,0 +1,25 @@
+# 取数登录方式（资料中心与工作台共用）。本文件可能写入服务账号密码，由运维维护，不要提交到代码仓库、不要外发。
+#   cdp       开发期：借用本机已登录门户的调试 Chrome（127.0.0.1:9222），程序不接触账号密码
+#   password  部署期：专用服务账号在内网直接登录（内网无验证码）；登录流程待服务账号到位后在内网联调
+# 环境变量可覆盖：DE_SESSION_MODE、DE_SERVICE_USER、DE_SERVICE_PASSWORD
+#
+# 测试账号：张建浩（2026-11-10 起统一使用；此前的临时账号已停用）。
+#   目前只开通了验证码登录 → 开发期用 cdp 模式（由人工在调试 Chrome 中登录）。
+#   开通密码登录后由客户提供账号信息，填入下方 password 段并把 mode 改为 password。
+#   该账号可见范围（2026-11-10 摸底）：合同系统主合同 / 采购结果台账可读，合同审批待办 2 笔（只读不打开）；
+#   公文系统内部请示仅 1 笔待办（只读不打开），无我的发起 / 已办；通财云外网不可达。
+#
+# 部署机 10.112.0.39 登录校验（2026-11-10 用服务账号查询统一认证，未提交密码）：
+#   login.gt.cn 在内网解析到 10.152.5.143；/idp/authRecord/checkLoginStatus 返回 result=true → 不要求短信 / OTP；
+#   /idp/displayVerificationCode.do 返回 false → 不要求图片验证码（连续输错密码后会出现，登录失败不要自动重试）。
+#   同一账号从外网访问返回 result=false，需要短信验证码；本地开发仍用 cdp 模式。
+#   密码在页面上经 RSA 加密后提交，password 模式用无界面浏览器填表登录，不直接拼 HTTP 请求。
+mode: cdp
+
+cdp:
+  url: http://127.0.0.1:9222
+
+password:
+  username: ""
+  password: ""
+  login_url: https://login.gt.cn/idp/authcenter/ActionAuthChain?entityId=portal

@@ -1,0 +1,127 @@
+{
+ "result": 200,
+ "state": "ok",
+ "message": "ok",
+ "special": "",
+ "vipMessage": "",
+ "payPointId": "",
+ "modelJson": "",
+ "isLogin": 0,
+ "errorCode": 0,
+ "data": {
+  "total": 2,
+  "list": [
+   {
+    "companyId": 7878601560,
+    "companyIdForMask": 7878601560,
+    "companyName": "济南卓珺智能科技有限公司",
+    "regCapital": "5万人民币",
+    "estiblishTime": null,
+    "estiblishTimeStr": "2025-12-05",
+    "establishYearsShowText": "2025-12-05",
+    "regStatus": "开业",
+    "logo": null,
+    "alias": "卓珺智能",
+    "legalPerson": [
+     {
+      "legalRepId": 1767047660,
+      "legalRepType": 2,
+      "legalRepHumanId": "S0C74MS0LG0F5N8A1",
+      "legalRepName": "于红姣",
+      "serviceCount": 1
+     }
+    ],
+    "suspectedTypeList": [
+     {
+      "typeCode": "same_email",
+      "typeDesc": "疑似相同邮箱"
+     }
+    ],
+    "suspectedTypeText": "疑似相同邮箱",
+    "phoneList": [],
+    "addressList": [],
+    "emailList": [
+     {
+      "email": "125589377@qq.com",
+      "sameType": 1
+     }
+    ],
+    "patentList": [],
+    "trademarkList": []
+   },
+   {
+    "companyId": 7875151049,
+    "companyIdForMask": 7875151049,
+    "companyName": "济南众安智能科技有限公司",
+    "regCapital": "5万人民币",
+    "estiblishTime": null,
+    "estiblishTimeStr": "2025-12-03",
+    "establishYearsShowText": "2025-12-03",
+    "regStatus": "开业",
+    "logo": null,
+    "alias": "众安智能",
+    "legalPerson": [
+     {
+      "legalRepId": 2927509230,
+      "legalRepType": 2,
+      "legalRepHumanId": "A0CLU960LC5HDDRP4",
+      "legalRepName": "臧立邦",
+      "serviceCount": 1
+     }
+    ],
+    "suspectedTypeList": [
+     {
+      "typeCode": "same_email",
+      "typeDesc": "疑似相同邮箱"
+     }
+    ],
+    "suspectedTypeText": "疑似相同邮箱",
+    "phoneList": [],
+    "addressList": [],
+    "emailList": [
+     {
+      "email": "125589377@qq.com",
+      "sameType": 1
+     }
+    ],
+    "patentList": [],
+    "trademarkList": []
+   }
+  ],
+  "countList": [
+   {
+    "itemKey": "疑似相同电话",
+    "key": "疑似相同电话",
+    "value": "same_phone",
+    "itemCount": -100
+   },
+   {
+    "itemKey": "疑似相同地址",
+    "key": "疑似相同地址",
+    "value": "same_address",
+    "itemCount": -100
+   },
+   {
+    "itemKey": "疑似相同邮箱",
+    "key": "疑似相同邮箱",
+    "value": "same_email",
+    "itemCount": -100
+   },
+   {
+    "itemKey": "专利转让",
+    "key": "专利转让",
+    "value": "patent_transfer",
+    "itemCount": -100
+   },
+   {
+    "itemKey": "商标转让",
+    "key": "商标转让",
+    "value": "trademark_transfer",
+    "itemCount": -100
+   }
+  ],
+  "pageNum": 1,
+  "showFilterAgentPhone": 0,
+  "showFilterHistoryAddress": 0
+ }
+}

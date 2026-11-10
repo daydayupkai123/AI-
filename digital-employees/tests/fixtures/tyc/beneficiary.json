@@ -1,0 +1,31 @@
+{
+ "state": "ok",
+ "message": null,
+ "special": "",
+ "vipMessage": "",
+ "isLogin": 0,
+ "data": {
+  "beneficialOwnerList": [
+   {
+    "humanName": "刘翠萍",
+    "humanNameId": 1815995903,
+    "humanCompanyGid": 6815676713,
+    "humanPid": "U0E2UMJ0AVF25HYBB",
+    "humanLogo": null,
+    "tag": "受益所有人",
+    "asFinalBeneficiaryCount": 1,
+    "finalBenefitShare": "99%",
+    "benefitType": "直接或间接持股，实际控制人，关键决策人员，法定代表人/负责人",
+    "positionType": "执行董事兼总经理,财务负责人，法定代表人",
+    "decisionReason": "穿透识别出直接或间接拥有超过25%公司股权或者表决权的自然人",
+    "alias": null,
+    "serviceType": 1,
+    "serviceCount": 1,
+    "showIcon": "1"
+   }
+  ],
+  "beneficialHumanList": [],
+  "beneficialOrgList": [],
+  "modelJson": null
+ }
+}

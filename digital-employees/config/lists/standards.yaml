@@ -1,0 +1,9 @@
+# 标准规范有效/失效清单（合同 R29）。由客户科技质量部维护。
+#
+# maintained：为 false 时 R29 提示「清单未提供」，不当作通过。
+# items：[{name: 标准编号（如 GB 50007-2011）, title: 标准名称, status: 现行|废止|被代替, replaced_by: 替代标准编号}]
+# 标准编号的写法与合同中保持一致：「代号 + 空格 + 顺序号-年号」，如 GB/T 50001-2017。
+
+maintained: false
+updated:
+items: []

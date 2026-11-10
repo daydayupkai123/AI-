@@ -1,0 +1,16 @@
+# 接口冒烟用的采集配置：只采本地事项，不访问客户系统；定时轮不触发（只测「立即采集」）。
+enabled: true
+start_delay_s: 3600
+interval_minutes: 600
+sync_workers: 1
+resync_hours: 12
+failed_retry_minutes: 60
+auto_review_concurrency: 2
+auto_review: {reimburse: true, meeting: true}
+fingerprint: {ignore_fields: []}
+sources:
+  local:
+    enabled: true
+    lists:
+      - {name: 本地事项·三会, kind: cases, employee: meeting, open_detail: true}
+      - {name: 本地事项·报销, kind: cases, employee: reimburse, open_detail: true}

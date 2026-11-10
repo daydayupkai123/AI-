@@ -1,0 +1,8 @@
+# 不合格供应商名单（合同 R17 合同主体资信）。由客户运营管理部维护。
+#
+# maintained：名单是否已由客户提供并维护。为 false 时，R17 会明确提示「不合格供应商名单未提供」，不当作未命中。
+# items：[{name: 公司全称, reason: 列入原因, since: 列入日期}]
+
+maintained: false
+updated:
+items: []

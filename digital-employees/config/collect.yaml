@@ -1,0 +1,64 @@
+# 资料中心采集策略（修改后下一轮生效）。只读：只调列表与已办详情接口，不改任何单据状态。
+# 采集 = 列出待审单据 → 提前读表单、下载附件、签名、解析入库；审查时直接复用，未同步的当场同步。
+
+enabled: true
+interval_minutes: 30            # 每个来源两轮之间的间隔
+active_hours: "07:00-22:00"     # 只在此时间段运行
+max_requests_per_round: 50      # 每个来源每轮最多同步的单据数
+sync_workers: 2                 # 同时同步的单据数
+resync_hours: 12                # 已同步的单据超过此时长再次同步（附件可能被替换）
+failed_retry_minutes: 60        # 同步失败的单据多久后重试
+retention_days: {files: 0, archive: 0}   # 0 = 永久保留（需求暂定「永久留存」）
+skip_prefetch_secret_levels: []          # 这些密级的附件不提前下载，审查时当场同步
+
+# 材料指纹忽略的字段（随审批推进变化、与审查无关），按标签正则匹配
+fingerprint:
+  ignore_fields: ["审批意见", "签字意见", "^归档"]
+
+# 自动审查：资料就绪且（未审查过 / 材料指纹变化）时自动发起，结果推送到工作台任务台
+auto_review:
+  contract: true
+  meeting: true                 # 当前账号看不到的旧快照（stale）不会自动审查
+  procurement: true
+  reimburse: true
+auto_review_concurrency: 2      # 自动审查同时最多几笔（人工发起的不受此限制）；0 = 暂停
+
+# 待办只读：当前账号的待办单据（人工输入单号审查时也一样）不读取表单详情、不下载附件；
+# 在测试待办上确认「读取详情不改变单据状态」后改为 true。
+allow_pending_detail: false
+
+# title_exclude：标题正则，命中的单据不采集（默认排除人事议题类请示，需要时删除该项）。
+# open_detail: false —— 只读列表（单号、标题），不打开详情、不下载附件。
+#   审核岗待办在客户造的测试待办上验证「读取详情不改变单据状态」之前，一律 false。
+sources:
+  contract:
+    enabled: true
+    lists:
+      - {name: 主合同台账·最近, kind: ledger, customid: 78, fields: {id: lcid, title: htmc, date: qdrq},
+         max: 10, employee: contract, open_detail: true}
+      - {name: 采购结果审批台账·最近, kind: ledger, customid: 83, fields: {id: lcid, title: cgnr, date: sqsj},
+         max: 5, employee: procurement, open_detail: true}
+      - {name: 主合同审批·待办, kind: reqlist, scope: doing, workflow_ids: [99], max: 50, employee: contract,
+         open_detail: false}
+      - {name: 采购结果审批·待办, kind: reqlist, scope: doing, workflow_ids: [100], max: 50, employee: procurement,
+         open_detail: false}
+  docflow:
+    enabled: true
+    lists:
+      - {name: 内部请示·我的发起, type: doneSent, keyword: 内部请示, template: 内部请示, max: 50, employee: meeting,
+         title_exclude: 人事议题, open_detail: true}
+      - {name: 内部请示·已办, type: donePending, keyword: 内部请示, template: 内部请示, max: 50, employee: meeting,
+         title_exclude: 人事议题, open_detail: true}
+      - {name: 内部请示·待办, type: pending, keyword: 内部请示, template: 内部请示, max: 50, employee: meeting,
+         open_detail: false}
+      # 公司数据查询 → 内部请示查询：全公司内部请示，只取流程已结束的（未结束的可能是他人待办，不打开）
+      - {name: 内部请示·公司查询（已结束）, kind: query, title_keyword: "采购结果|签订.*合同|立项", max: 8,
+         employee: meeting, title_exclude: 人事议题, open_detail: true}
+  fincloud:
+    enabled: false              # 外网访问被拦截（需 VPN），部署到内网后开启
+    lists: []
+  local:                        # 本地事项（.runtime/cases）：客户系统无法访问的场景用样例 / 导入事项走完整的采集与自动审查链路
+    enabled: true
+    lists:
+      - {name: 本地事项·三会, kind: cases, employee: meeting, max: 50, open_detail: true}
+      - {name: 本地事项·报销, kind: cases, employee: reimburse, max: 50, open_detail: true}

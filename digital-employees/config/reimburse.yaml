@@ -1,0 +1,72 @@
+# 财务报销初审数字员工配置（规则阈值与词表）。由财务维护，修改后下一次审查生效，无需发版。
+# 依据：需求场景/财务报销AI初审-需求说明书（讨论稿V2.1）.docx
+
+# 规则开关：enabled=false 的规则记为「未执行」并显示 reason（需求第二章「尚未确定的 5 个问题」）
+rules:
+  TRV-06: {enabled: false, reason: "补助金额是否须为 100 的倍数，原文注明「系统调整了，待定」，等业务给出判定口径后启用（待确认 01）"}
+  GEN-04: {enabled: true, threshold_pending: true, reason: "长期/临时租车的金额分界未确定（待确认 03），本期只校验「租车申请」，租车协议是否必需暂不判断"}
+
+# ENT-02 / TRV-07 陪餐人数上限（人数向上取整）
+accompany:
+  商务外事: {small_max_guests: 5, over_ratio: 0.5}          # ≤5 人可对等陪餐；>5 人陪餐 ≤ 总人数 1/2
+  其他公务: {small_max_guests: 10, small_max_accompany: 3, over_ratio: 0.3333333}  # ≤10 人陪餐 ≤3；>10 人 ≤ 1/3
+
+# ENT-03 人均标准（元/人，按招待对象人数计算）
+per_capita:
+  high_grades: [总经理助理, 专业通道11级, 专业通道12级, 专业通道13级]   # 高档职级
+  high: {商务外事: 500, 其他公务: 400}
+  normal: {商务外事: 400, 其他公务: 300}   # 中层干部、部门助理、专业通道 7—10 级、一般员工；职级判不准时按此档并转人工确认
+
+# ENT-05 纪念品
+gift: {per_person_max: 300, max_times: 1}
+
+# ENT-09 上年度发票：每年此月及以后不允许报销上一自然年度发票
+prior_year_cutoff_month: 2
+
+# ENT-10 招待日期与开票日期允许相差天数
+entertain_invoice_days: 1
+
+# ENT-12 敏感单位字眼（全字段检索，命中即提示，由人工确认）
+sensitive_words: [国际公司, 上级公司, 咨询公司, 通用集团, 军队]
+
+# ENT-06 中央企业名录（关键字匹配招待对象单位）。maintained=false 表示名录待财务确认，仅作初筛
+central_soes:
+  maintained: false
+  keywords: [国家电网, 中国南方电网, 中国石油, 中国石化, 中国海洋石油, 中国移动, 中国电信, 中国联通, 中国建筑, 中国中铁,
+             中国铁建, 中国交通建设, 中国电建, 中国能建, 中国中车, 国家能源, 中国华能, 中国大唐, 中国华电, 国家电力投资,
+             三峡集团, 中国核工业, 中国航天科技, 中国航天科工, 中国航空工业, 中国船舶, 中国兵器, 中国电子科技, 中国电子信息,
+             中国一汽, 东风汽车, 中国五矿, 中国宝武, 中国铝业, 中粮, 中国中化, 保利集团, 华润, 招商局, 中国诚通, 中国国新,
+             通用技术, 中国建材, 中国化学工程, 中国机械工业, 中国商飞, 中国节能, 中国旅游集团, 中国医药集团, 中国检验认证]
+
+# OFF-04 发票内容负面清单（不属于办公费的内容）。maintained=false 时本规则提示「负面清单未提供」
+office_negative_list:
+  maintained: false
+  words: []
+
+# OFF-05 预付储值类关键词
+prepaid_words: [预付, 储值, 充值, 预存]
+
+# TRA-01 第三方出行/租车平台
+ride_platforms: [滴滴, 神州租车, 首汽约车, 曹操出行, T3出行, 高德打车, 美团打车, 享道出行, 如祺出行, 花小猪, 携程用车, 一嗨租车, 嘀嗒出行]
+
+# TRN-01 培训费指定商品名称
+training_item_name: "生产生活费服务*培训费"
+
+# VEH-01 费用项目 → 发票名称应包含的关键词
+vehicle_items:
+  年检费: [检测, 年检, 检验]
+  车辆修理费: [维修, 修理, 修配]
+  保养费: [保养, 维护保养]
+  过路过桥费: [通行费, 过路, 过桥, 高速]
+  车辆保险费: [保险]
+  燃油费: [汽油, 柴油, 燃油, 成品油]
+  停车费: [停车]
+  车船税使用税: [车船税, 车船使用税]
+  充电费: [充电, 电费]
+  车辆租赁费: [租赁, 租车]
+
+# AST-02 资产档位 → 必备附件（类型代码见 employees/reimburse/materials.py）
+asset_required:
+  必备: [asset_inbound, asset_request]
+  专项: [asset_inbound, asset_request, purchase_contract, internal_request]
+  重大: [asset_inbound, asset_request, purchase_contract, internal_request, meeting_material, meeting_resolution]

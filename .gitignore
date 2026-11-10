@@ -1,0 +1,15 @@
+# 客户原始材料与其他团队代码，不入库
+需求场景/
+财务数字填报/
+ocr/
+RPA.md
+
+# 运行数据、虚拟环境、缓存
+**/.runtime/
+**/.venv/
+**/.pytest_cache/
+**/__pycache__/
+*.pyc
+.env
+*.local.yaml
+.DS_Store

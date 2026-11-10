@@ -1,0 +1,30 @@
+# 三会审查的正式制度知识库（首批四份）。
+#
+# path：相对 digital-employees 目录或绝对路径；enabled：是否启用（停用后不参与检索与核验）。
+# kind：解析方式 —— authority_manual 权责手册（表格，红色标记为最终审批主体）
+#                   major_items      重大经营管理事项清单（√ 为决策主体）
+#                   party_items      党委决定的重大事项清单（决策主体为党委会）
+#                   board_authorization 董事会授权决策方案（授权董事长 → 专题会；授权总经理 → 总经理办公会）
+# 修改文件或替换 PDF 后无需重启：按文件内容签名自动重新解析。
+
+documents:
+  - id: authority_manual
+    name: 公司权责手册（2026年修订版）
+    kind: authority_manual
+    path: ../需求场景/三会规章制度/附件：通用技术集团工程设计有限公司权责手册（2026年修订版）.pdf
+    enabled: true
+  - id: major_items
+    name: 公司重大经营管理事项清单
+    kind: major_items
+    path: ../需求场景/三会规章制度/附件：通用技术集团工程设计有限公司重大经营管理事项清单.pdf
+    enabled: true
+  - id: party_items
+    name: 公司党委决定的重大事项清单
+    kind: party_items
+    path: ../需求场景/三会规章制度/附件：公司党委决定的重大事项清单.pdf
+    enabled: true
+  - id: board_authorization
+    name: 公司董事会授权决策方案（2026年版）
+    kind: board_authorization
+    path: ../需求场景/三会规章制度/通设字〔2026〕8号--关于印发《通用技术集团工程设计有限公司董事会授权决策方案》的通知.pdf
+    enabled: true

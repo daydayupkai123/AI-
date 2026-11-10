@@ -1,0 +1,25 @@
+# OCR 引擎配置（资料中心使用）。修改后下一次解析生效；已入库的结果按引擎区分，不会混用。
+# 只有扫描页 / 图片会调用 OCR；Word、Excel 与带文字层的 PDF 直接读取文字。
+
+# rapidocr：本地引擎（开发 / 离线兜底）　paddleocr_vl：客户 PaddleOCR-VL 版面解析服务
+# 客户 OCR 当前从开发机访问返回 404（no Route matched），内网地址待客户确认后切换。
+engine: rapidocr
+
+rapidocr:
+  dpi: 150
+  sec_per_page: 2.8          # 整体每页耗时（已含并行，用于界面预计时间；实测 157 页约 6 分钟、10 页约 29 秒）
+
+paddleocr_vl:
+  url: https://chat.gt.cn/paddleocr-vl/layout-parsing
+  dpi: 150                   # 扫描页渲染成图片的分辨率
+  send_pdf: false            # 客户确认支持整份 PDF（fileType=0）后可改为 true
+  concurrency: 2             # 同时在途的请求数（资料中心全局，采集与当场同步共用，当场同步优先）
+  per_minute: 30             # 每分钟最多调用次数
+  timeout_s: 120             # 单页超时
+  retries: 2                 # 失败重试次数（指数退避）
+  sec_per_page: 3.5          # 单页请求耗时（客户测试报告平均 3.4 秒），预计时间按 concurrency 并行折算
+  options:                   # 透传给接口的参数
+    useDocOrientationClassify: false
+    useDocUnwarping: false
+    useLayoutDetection: true
+    returnMarkdownImages: false
