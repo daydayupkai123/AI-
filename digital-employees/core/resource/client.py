@@ -117,9 +117,18 @@ class HttpResourceClient:
 
     def _job(self, path: str, body: dict, progress: Progress | None):
         job = self._json("POST", path, json=body)["job_id"]
-        since = 0
+        since, slow_since = 0, None
         while True:
-            d = self._json("GET", f"/v1/jobs/{job}/events", params={"since": since}, timeout=30)
+            # OCR 满负荷时资料中心偶尔几十秒不响应；查进度是幂等的，超时就重试，连续 5 分钟无响应才判定不可用
+            try:
+                d = self._json("GET", f"/v1/jobs/{job}/events", params={"since": since}, timeout=60)
+                slow_since = None
+            except ResourceUnavailable as exc:
+                slow_since = slow_since or time.time()
+                if not isinstance(exc.__cause__, requests.RequestException) or time.time() - slow_since > 300:
+                    raise
+                time.sleep(2)
+                continue
             for ev in d["events"]:
                 if progress:
                     progress(ev)

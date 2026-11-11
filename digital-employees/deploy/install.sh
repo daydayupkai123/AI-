@@ -11,8 +11,14 @@ export PLAYWRIGHT_BROWSERS_PATH=$BASE/browsers
 mkdir -p "$BASE"/{runtime,browsers,chrome-profile,python,logs}
 
 if [ ! -x "$BASE/uv/uv" ]; then
-  python3 -m pip install -q --target "$BASE/uv-pkg" -i "$PIP_INDEX" --trusted-host mirrors.aliyun.com uv
-  mkdir -p "$BASE/uv" && ln -sf "$BASE/uv-pkg/bin/uv" "$BASE/uv/uv"
+  # 系统 Python 可能没有 pip：直接从 PyPI 镜像取 uv 的 manylinux wheel 解压出二进制
+  WHL=$(curl -fsSL "${PIP_INDEX%/}/uv/" | grep -o 'href="[^"]*manylinux[^"]*x86_64[^"]*\.whl[^"]*"' \
+        | grep -v musllinux | sed 's/^href="//; s/"$//' | tail -1)
+  case "$WHL" in http*) ;; *) WHL="${PIP_INDEX%/}/uv/$WHL" ;; esac
+  rm -rf "$BASE/uv" && mkdir -p "$BASE/uv"
+  curl -fsSL "${WHL%%#*}" -o "$BASE/uv/uv.whl"
+  (cd "$BASE/uv" && unzip -q -o uv.whl 'uv-*.data/scripts/*' && mv uv-*.data/scripts/uv* . && rm -rf uv-*.data uv.whl)
+  chmod +x "$BASE/uv/uv"
 fi
 UV=$BASE/uv/uv
 "$UV" python install 3.12

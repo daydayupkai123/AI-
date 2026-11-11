@@ -111,10 +111,10 @@ def stream(messages: list[dict], role: str = "chat", **overrides) -> Iterator[di
                            timeout=(10, p.get("timeout", 300))) as r:
             if r.status_code != 200:
                 raise RuntimeError(f"Ollama 返回 {r.status_code}：{r.text[:300]}")
-            for line in r.iter_lines(decode_unicode=True):
-                if not line:
+            for raw in r.iter_lines():
+                if not raw:
                     continue
-                d = json.loads(line)
+                d = json.loads(raw.decode("utf-8"))
                 if d.get("error"):
                     raise RuntimeError(d["error"])
                 msg = d.get("message") or {}
@@ -131,7 +131,10 @@ def stream(messages: list[dict], role: str = "chat", **overrides) -> Iterator[di
                            timeout=(10, p.get("timeout", 120))) as r:
             if r.status_code != 200:
                 raise RuntimeError(f"模型服务返回 {r.status_code}：{r.text[:300]}")
-            for line in r.iter_lines(decode_unicode=True):
+            # 按字节切行再按 UTF-8 解码：网关不声明字符集时 decode_unicode 按 Latin-1 解码，
+            # 中文字节中的 0x85 会被当作换行（NEL）把一行 JSON 截断
+            for raw in r.iter_lines():
+                line = raw.decode("utf-8")
                 if not line or not line.startswith("data:"):
                     continue
                 data = line[5:].strip()

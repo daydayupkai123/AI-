@@ -113,6 +113,7 @@ class ServiceLoginFailed(DEError):
 
 
 LOGIN_RETRY_AFTER_S = 600
+PORTAL_LOGIN = "https://login.gt.cn/idp/authcenter/ActionAuthChain?entityId=portal"
 
 
 class PasswordSessionProvider(CdpSessionProvider):
@@ -139,22 +140,27 @@ class PasswordSessionProvider(CdpSessionProvider):
             if self._failed and time.time() - self._failed[0] < LOGIN_RETRY_AFTER_S:
                 raise ServiceLoginFailed(f"上次登录失败（{self._failed[1]}），{LOGIN_RETRY_AFTER_S // 60} 分钟内不再自动重试")
             try:
+                # 未登录时子系统的 OAuth 授权页只显示空白错误页，不出登录表单：先到门户登录页登录，再回子系统入口
+                if not page.locator("#fs86_fsusername").count():
+                    page.goto(self.login_url or PORTAL_LOGIN, wait_until="domcontentloaded", timeout=60000)
                 self._submit(page)
             except ServiceLoginFailed as exc:
                 self._failed = (time.time(), exc.detail)
                 raise
             self._failed = None
+        if WARMUP.get(host):
+            page.goto(WARMUP[host], wait_until="domcontentloaded", timeout=60000)
 
     def _submit(self, page) -> None:
         page.wait_for_selector("#fs86_fsusername", timeout=20000)
         page.wait_for_timeout(800)
         page.fill("#fs86_fsusername", self.username)
         page.locator("#fs86_fsusername").blur()
-        page.click("#fs86_fspassword")
+        page.focus("#fs86_fspassword")  # 输入框上盖着「密码」提示层，点击会被挡住
         page.fill("#fs86_fspassword", self._password)
         page.wait_for_timeout(1500)  # 用户名失焦后页面异步查询是否需要短信 / 图片验证码
         for box, what in (("#sms86_checkbox", "短信验证码"), ("#sms86_otp", "动态口令"), ("#yzm4Bar1", "图片验证码")):
-            if page.locator(box).is_visible():
+            if page.locator(f"#authen86Form1 {box}").first.is_visible():  # 页面上多个表单复用了同样的 id
                 raise ServiceLoginFailed(f"统一认证要求{what}（服务器不在免验证网络，或账号输错次数过多）")
         page.click("form#authen86Form1 button.loginBt")
         deadline = time.time() + 30
@@ -162,8 +168,11 @@ class PasswordSessionProvider(CdpSessionProvider):
             page.wait_for_timeout(1000)
             if not urlparse(page.url).netloc.startswith("login."):
                 return
-            msg = page.evaluate("""() => [...document.querySelectorAll('#authen86Form1 .warningTxt, #errorDivMsg')]
-                .map(e => e.innerText.trim()).filter(Boolean).join('；')""")
+            try:
+                msg = page.evaluate("""() => [...document.querySelectorAll('#authen86Form1 .warningTxt, #errorDivMsg')]
+                    .map(e => e.innerText.trim()).filter(Boolean).join('；')""")
+            except Exception:  # noqa: BLE001  登录成功后页面正在跳转
+                continue
             if msg:
                 raise ServiceLoginFailed(f"统一认证提示：{msg}")
         raise ServiceLoginFailed(f"提交后 30 秒仍停留在统一认证页：{page.url[:120]}")
