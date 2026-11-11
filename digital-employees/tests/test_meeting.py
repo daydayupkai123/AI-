@@ -191,10 +191,26 @@ def test_body_incomplete_sentence_needs_exact_quote():
     f = {"body": _mat("请示.docx", text, "request_body"), "stage": "合同签订", "body_title": None, "title_core": "某项目",
          "case_amount": {"value": 1}, "placeholders": [], "body_refs": [], "basis_parts": {},
          "_judge": lambda *a: {"problems": [{"quote": "在本协议签订后28个工作日内支付给乙公司， /think", "issue": "语句残缺"}]}}
-    assert B.check(f).code == "issue"  # 去掉抄进来的思考开关标记后，原文逐字可定位
+    out = B.check(f)
+    assert out.code == "pass" and "未采信" in out.message  # 引用里带思考开关标记：所指「残缺」就是模型产物
     f["_judge"] = lambda *a: {"problems": [{"quote": "在本协议签订后28个工作日内支付给乙公司，并承担", "issue": "语句残缺"}]}
     out = B.check(f)
     assert out.code == "pass" and "无法在正文中定位" in out.message  # 模型多写的内容不采信
+    f["_judge"] = lambda *a: {"problems": [{"quote": "支付给乙公司，乙公司开具发票", "issue": "语句残缺"}]}
+    assert B.check(f).code == "issue"  # 逐字出自原文才采信
+
+
+def test_org_name_variants_in_body():
+    from employees.meeting.checks.body import org_variants
+
+    text = ("本次采购采用邀请招标（询价）方式，向山东悦幕影院管理有限公司、济南飞影影业有限公司发出邀请函。截至6月30日，"
+            "山东悦幕影院管理有限公司响应，报价如下：\n1\t山东幕悦影院\n管理有限公司\t30\n"
+            "委托山东中济安全评价有限公司组织采购，由山东中济安全评价有限公司评审；广联达科技股份有限公司山东分公司为授权主体，"
+            "广联达科技股份有限公司持有专有技术。")
+    out = org_variants(text)
+    assert [(a, b) for a, b, _ in out] == [("山东悦幕影院管理有限公司", "山东幕悦影院管理有限公司")]
+    assert org_variants("山东华信软件有限公司中标，山东华讯软件有限公司报价第二。")  # 一字之差
+    assert not org_variants("向甲方科技有限公司付款，由甲方科技有限公司开票。")
 
 
 def _mat(name, text="内容", role="other"):

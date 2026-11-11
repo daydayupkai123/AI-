@@ -13,7 +13,7 @@ from core.rules.engine import Rule
 
 from . import attachments, basis, body, meeting_type, title
 
-VERSION = "meeting-2026.11.10-r2"
+VERSION = "meeting-2026.11.10-r3"
 EMPLOYEE = "meeting"
 
 RULES = [

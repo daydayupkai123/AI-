@@ -14,6 +14,34 @@ from .. import prompts
 from .title import _contains_core
 
 
+THINK_TOKEN = re.compile(r"/no_think|/think|</?think>")
+ORG_RE = re.compile(r"[\u4e00-\u9fa5（）()]{2,30}?(有限责任公司|股份有限公司|有限公司|集团公司|研究院|设计院)")
+ORG_LEAD = re.compile(r"^(委托|推荐|同意|确定|选定|邀请|建议|向|由|与|和|及|为|对|给|经|是|将|在|从|被|请|即|系)+")
+
+
+def _one_edit(a: str, b: str) -> bool:
+    return len(a) == len(b) and sum(x != y for x, y in zip(a, b)) == 1
+
+
+def org_variants(text: str) -> list[tuple[str, str, int]]:
+    """正文中同一单位的不同写法：字序颠倒（如「悦幕 / 幕悦」）或同长度仅一字之差。包含关系（总公司 / 分公司）不算。"""
+    flat = re.sub(r"\s+", "", text or "")
+    seen: dict[str, int] = {}
+    for m in ORG_RE.finditer(flat):
+        lead = ORG_LEAD.match(m.group(0))
+        name = m.group(0)[lead.end() if lead else 0:]
+        seen.setdefault(name, m.start() + (lead.end() if lead else 0))
+    names = list(seen)
+    out = []
+    for i, a in enumerate(names):
+        for b in names[i + 1:]:
+            if len(a) < 8 or a in b or b in a:
+                continue
+            if (sorted(a) == sorted(b) and a != b) or _one_edit(a, b):
+                out.append((a, b, seen[b]))
+    return out
+
+
 def _ref_key(r: dict) -> tuple:
     return (r["doc_id"], r.get("dept"), r.get("no"))
 
@@ -43,15 +71,19 @@ def check(f):
     if body_refs and basis_refs and not set(body_refs) & set(basis_refs):
         problems.append(f"正文引用的制度条款（{'、'.join(r['raw'] for r in body_refs.values())}）与表单审批/上会依据"
                         f"（{'、'.join(r['raw'] for r in basis_refs.values())}）不一致")
-    res = f["_judge"]("meeting.N04.text", prompts.BODY, text[:3500])
+    for a, b, pos in org_variants(text):
+        problems.append(f"前后矛盾：单位名称写法不一致「{a}」/「{b}」，请核实是否为同一单位")
+        ev.append(C.ev(body.name, None, C.around(text, pos, pos + len(b)), label="单位名称"))
+    res = f["_judge"]("meeting.N04.text", prompts.BODY, f"【事项阶段】{stage or '未识别'}\n\n【请示正文】\n{text[:3500]}")
     dropped, off_scope = 0, 0
     for p in res.get("problems") or []:
         if not isinstance(p, dict):
             continue
         q, kind = str(p.get("quote") or ""), str(p.get("issue") or "").strip()
-        q = re.sub(r"\s*(/no_think|/think|</?think>)\s*", "", q)  # 模型偶尔把思考开关标记抄进引用
         if kind not in prompts.BODY_ISSUES:
             off_scope += 1
+        elif THINK_TOKEN.search(q):
+            dropped += 1  # 模型把思考开关标记抄进了引用，所指「残缺」多半就是这个标记本身
         elif (quote_exact if kind == "语句残缺" else quote_found)(q, text):
             problems.append(f"{kind}：「{q}」{('，' + p['explain']) if p.get('explain') else ''}")
             ev.append(C.ev(body.name, None, q, label=kind))
