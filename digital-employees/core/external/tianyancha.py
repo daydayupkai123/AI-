@@ -16,7 +16,7 @@ from dataclasses import asdict, dataclass, field
 from urllib.parse import quote
 
 from ..config import CDP_URL
-from . import ExternalUnavailable
+from . import ExternalUnavailable, TianyanchaBlocked, TianyanchaNeedsLogin
 
 KIND = "tianyancha.profile"
 TTL_S = 7 * 24 * 3600
@@ -154,6 +154,20 @@ def assemble(query: str, captured: dict[str, dict], detail_text: str, url: str) 
     return p
 
 
+def check_text(url: str, text: str) -> None:
+    """页面是否被天眼查拦截 / 要求登录验证；是则抛出对应异常（避免把拦截页误判为「未搜索到」）。"""
+    if "暂停您的访问" in text or "操作存在异常" in text:
+        m = re.search(r"识别码[:：]\s*([\w-]+)", text)
+        raise TianyanchaBlocked(f"天眼查提示「系统检测到您的操作存在异常，已暂停您的访问请求」"
+                                f"{'，识别码 ' + m.group(1) if m else ''}")
+    if "/login" in url or "拖动滑块" in text or "完成拼图" in text:
+        raise TianyanchaNeedsLogin(f"天眼查跳转到登录 / 人机验证页面：{url[:120]}")
+
+
+def _check_page(page) -> None:
+    check_text(page.url, page.evaluate("() => document.body ? document.body.innerText.slice(0, 3000) : ''"))
+
+
 class TianyanchaClient:
     """串行使用（公用账号、页面单实例）；调用方负责缓存与限速。"""
 
@@ -185,8 +199,7 @@ class TianyanchaClient:
                     page.goto("https://www.tianyancha.com/search?key=" + quote(name), wait_until="domcontentloaded",
                               timeout=60000)
                     page.wait_for_timeout(3000)
-                    if "login" in page.url:
-                        raise ExternalUnavailable("天眼查要求登录")
+                    _check_page(page)
                     link = page.locator("a[href*='/company/']").first
                     href = link.get_attribute("href") if link.count() else None
                     if not href:
@@ -195,6 +208,7 @@ class TianyanchaClient:
                     page.goto(href if href.startswith("http") else "https://www.tianyancha.com" + href,
                               wait_until="domcontentloaded", timeout=60000)
                     page.wait_for_timeout(self.wait_ms)
+                    _check_page(page)
                     text = page.evaluate("() => document.body.innerText")
                     url = page.url
                 finally:

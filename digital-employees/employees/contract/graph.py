@@ -179,8 +179,8 @@ def build_graph(rt: Runtime, deps: Deps):
             try:
                 ext["tianyancha"] = deps.tianyancha.profile(name)
             except ExternalUnavailable as exc:
-                ext["tianyancha"] = {"error": f"{exc.title}：{exc.detail}"}
-                rt.on_event({"type": "node.note", "text": f"天眼查查询未完成：{exc.detail}"})
+                ext["tianyancha"] = {"error": f"{exc.title}：{exc.detail}", "failed": True, "hint": exc.hint}
+                rt.on_event({"type": "node.note", "text": f"{exc.title}：{exc.detail}。{exc.hint}"})
         facts["external"] = ext
         facts["lists"] = deps.lists if deps.lists is not None else {
             "unqualified": NameList("unqualified_suppliers"), "standards": NameList("standards")}

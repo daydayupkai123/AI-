@@ -100,10 +100,24 @@ def test_verify_rejects_off_topic_differences(env):
     assert r["code"] == "review" and "讲的不是同一事项" in r["message"]
 
 
-def test_tianyancha_unavailable_goes_to_review(env):
+def test_tianyancha_unavailable_is_aborted_with_reason(env):
     final, _ = run(env, "DEMO-HT-002", tyc=FakeTianyancha(error="天眼查要求登录"))
     r = by_id(final["results"])["R17"]
-    assert r["code"] == "review" and "天眼查查询未完成" in json.dumps(r, ensure_ascii=False)
+    assert r["code"] == "error" and "天眼查查询失败" in r["message"] and "处理：" in r["message"], r
+
+
+def test_tianyancha_block_page_is_not_reported_as_not_found():
+    import pytest
+
+    from core.external import TianyanchaBlocked, TianyanchaNeedsLogin
+    from core.external.tianyancha import check_text
+
+    with pytest.raises(TianyanchaBlocked, match="识别码 406-6af3d160"):
+        check_text("https://www.tianyancha.com/search?key=x",
+                   "系统检测到您的操作存在异常 已暂停您的访问请求 识别码: 406-6af3d160-dead298a")
+    with pytest.raises(TianyanchaNeedsLogin):
+        check_text("https://www.tianyancha.com/login", "请拖动滑块完成拼图")
+    check_text("https://www.tianyancha.com/company/1", "济宁华擎工程管理有限公司 开业")
 
 
 def test_tianyancha_dishonest_is_issue(env):

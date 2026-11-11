@@ -7,7 +7,7 @@ from __future__ import annotations
 import re
 
 from core.rules import common as C
-from core.rules.engine import issue, missing, na, ok, review
+from core.rules.engine import aborted, issue, missing, na, ok, review
 
 from ._util import BRANCH_RE, fev, form, form_ev, has, needs_contract
 
@@ -62,6 +62,9 @@ def r17(f):
     else:
         notes.append("不合格供应商名单未提供，名单比对未完成")
     tyc = _tyc(f)
+    if tyc.get("failed"):
+        return aborted(f"天眼查查询失败，本条未能审查。{tyc['error']}。处理：{tyc.get('hint') or ''}", ev,
+                       failure={"system": "天眼查", "error": tyc["error"], "hint": tyc.get("hint")})
     if tyc.get("error"):
         notes.append(f"天眼查查询未完成（{tyc['error']}）")
     elif not tyc.get("risks"):

@@ -108,8 +108,8 @@ class ServiceAccountNotReady(DEError):
 
 class ServiceLoginFailed(DEError):
     title = "服务账号登录统一认证失败"
-    hint = ("请确认服务账号密码正确且未被锁定。为避免连续输错触发验证码或锁号，失败后 10 分钟内不再自动登录；"
-            "处理好后重启工作台服务即可立即重试。")
+    hint = ("请服务账号提供人在浏览器中登录门户 https://i.gt.cn ，处理密码过期、账号锁定或验证码等问题，确认能正常登录后再点「重新审查」。"
+            "为避免连续输错导致锁号，登录失败后 10 分钟内系统不会再自动尝试。")
 
 
 LOGIN_RETRY_AFTER_S = 600
