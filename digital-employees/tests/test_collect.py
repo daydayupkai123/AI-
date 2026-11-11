@@ -213,8 +213,10 @@ def test_session_modes(tmp_path, monkeypatch):
     monkeypatch.delenv("DE_SESSION_MODE", raising=False)
     with pytest.raises(ServiceAccountNotReady):
         session.provider_from_config()
-    p = PasswordSessionProvider("svc", "pwd")
-    with pytest.raises(ServiceAccountNotReady):
-        p.session()
+    monkeypatch.setenv("DE_SERVICE_USER", "svc")
+    monkeypatch.setenv("DE_SERVICE_PASSWORD", "pwd")
+    p = session.provider_from_config()
+    assert isinstance(p, PasswordSessionProvider) and p.username == "svc"
+    monkeypatch.delenv("DE_SERVICE_USER")
     cfg.write_text("mode: cdp\n", encoding="utf-8")
     assert isinstance(session.provider_from_config(), session.CdpSessionProvider)

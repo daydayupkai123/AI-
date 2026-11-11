@@ -1,0 +1,17 @@
+[Unit]
+Description=AI digital employees - workbench (DE_HOST:DE_PORT, default 8090)
+After=network-online.target de-chrome.service de-resource.service
+Wants=de-chrome.service de-resource.service
+
+[Service]
+WorkingDirectory=/data/digital-employees/app
+EnvironmentFile=/data/digital-employees/de.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/data/digital-employees/app/.venv/bin/python -m core.api.server
+Restart=always
+RestartSec=5
+StandardOutput=append:/data/digital-employees/logs/web.log
+StandardError=append:/data/digital-employees/logs/web.log
+
+[Install]
+WantedBy=multi-user.target

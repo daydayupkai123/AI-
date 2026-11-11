@@ -1,0 +1,27 @@
+# 服务器版大模型配置（DE_LLM_CONFIG 指向本文件）：使用客户内网模型网关 one.gt.cn（OpenAI 兼容）。
+# 密钥由 de.env 中的 GT_LLM_API_KEY 注入，不写进本文件。修改后无需重启。
+
+providers:
+  gt_qwen:
+    type: openai
+    base_url: https://one.gt.cn/v1
+    api_key: ${GT_LLM_API_KEY}
+    model: Qwen3.6-35B-A3B-w8a8
+    temperature: 0.5
+    timeout: 180
+
+  gt_deepseek:                      # 网关上该模型当前无响应（2026-11-10 排查），恢复后可切换
+    type: openai
+    base_url: https://one.gt.cn/v1
+    api_key: ${GT_LLM_API_KEY}
+    model: DeepSeek-V4-Flash-w8a8-mtp
+    temperature: 0.5
+    timeout: 180
+
+roles:
+  chat: gt_qwen
+  extract: gt_qwen
+  judge: gt_qwen
+
+chat:
+  max_history: 12

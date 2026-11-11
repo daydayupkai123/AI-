@@ -1,0 +1,14 @@
+[Unit]
+Description=AI digital employees - headless Chrome (127.0.0.1:9222)
+After=network-online.target
+
+[Service]
+EnvironmentFile=/data/digital-employees/de.env
+ExecStart=/bin/bash /data/digital-employees/app/deploy/chrome.sh
+Restart=always
+RestartSec=5
+StandardOutput=append:/data/digital-employees/logs/chrome.log
+StandardError=append:/data/digital-employees/logs/chrome.log
+
+[Install]
+WantedBy=multi-user.target

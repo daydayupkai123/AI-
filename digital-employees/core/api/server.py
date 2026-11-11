@@ -122,6 +122,28 @@ async def revalidate_static(request, call_next):
     return resp
 
 
+_WEB_AUTH = (os.environ.get("DE_WEB_USER", ""), os.environ.get("DE_WEB_PASSWORD", ""))
+
+
+@app.middleware("http")
+async def basic_auth(request, call_next):
+    """对外开放时的访问口令（DE_WEB_USER / DE_WEB_PASSWORD 均设置才启用）。"""
+    if not all(_WEB_AUTH):
+        return await call_next(request)
+    import base64
+    import secrets as _secrets
+
+    scheme, _, token = request.headers.get("authorization", "").partition(" ")
+    try:
+        user, _, pwd = base64.b64decode(token).decode("utf-8").partition(":") if scheme.lower() == "basic" else ("", "", "")
+    except Exception:  # noqa: BLE001
+        user, pwd = "", ""
+    if (_secrets.compare_digest(user.encode(), _WEB_AUTH[0].encode())
+            and _secrets.compare_digest(pwd.encode(), _WEB_AUTH[1].encode())):
+        return await call_next(request)
+    return Response(status_code=401, headers={"WWW-Authenticate": 'Basic realm="AI digital employees", charset="UTF-8"'})
+
+
 class RunIn(BaseModel):
     employee: str = "procurement"
     request_id: str
@@ -667,4 +689,5 @@ app.mount("/", StaticFiles(directory=str(WEB), html=True), name="web")
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="127.0.0.1", port=8090, log_level="warning")
+    uvicorn.run(app, host=os.environ.get("DE_HOST", "127.0.0.1"), port=int(os.environ.get("DE_PORT", "8090")),
+                log_level="warning")

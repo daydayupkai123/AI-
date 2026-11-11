@@ -1,0 +1,17 @@
+[Unit]
+Description=AI digital employees - resource center (127.0.0.1:8091)
+After=network-online.target de-chrome.service
+Wants=de-chrome.service
+
+[Service]
+WorkingDirectory=/data/digital-employees/app
+EnvironmentFile=/data/digital-employees/de.env
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/data/digital-employees/app/.venv/bin/python -m core.resource.api
+Restart=always
+RestartSec=5
+StandardOutput=append:/data/digital-employees/logs/resource.log
+StandardError=append:/data/digital-employees/logs/resource.log
+
+[Install]
+WantedBy=multi-user.target
