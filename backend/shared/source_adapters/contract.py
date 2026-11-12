@@ -1,4 +1,4 @@
-"""合同管理系统（泛微 e-cology）只读取数适配器。接口说明见 docs/M0-合同系统取数摸底.md。"""
+"""合同管理系统（泛微 e-cology）只读取数适配器。接口说明见摸底文档《M0-合同系统取数摸底》。"""
 from __future__ import annotations
 
 import re

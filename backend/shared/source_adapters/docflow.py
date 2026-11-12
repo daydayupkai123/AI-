@@ -1,4 +1,4 @@
-"""公文系统（致远 Seeyon，oa-xc.gt.cn）「内部请示」只读取数适配器。接口说明见 docs/M0-公文系统取数摸底.md。
+"""公文系统（致远 Seeyon，oa-xc.gt.cn）「内部请示」只读取数适配器。接口说明见摸底文档《M0-公文系统取数摸底》。
 
 取数链路（均为查询类请求）：
   1. 门户 i.gt.cn 工作台列表 API_CODE_FINDPERSONALWORKS（app=4 公文），按内请号/标题定位 affairId；

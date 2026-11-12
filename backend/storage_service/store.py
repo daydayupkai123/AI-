@@ -2,7 +2,7 @@
 
 独立库文件（默认 .runtime/resource/resource.sqlite3），原件与解析结果目录沿用 .runtime/store。
 首次创建时从旧的工作台库一次性迁入文件与解析记录（已有 OCR 结果不重做）。
-表结构见 docs/文件解析结果缓存与存储设计.md 与 docs/资料中心与自动化设计.md。
+表结构见设计文档《文件解析结果缓存与存储设计》《资料中心与自动化设计》。
 """
 from __future__ import annotations
 
