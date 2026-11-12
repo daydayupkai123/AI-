@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="财务审核数字员工工作台">
+  <title>财务审核数字员工</title>
+  <link rel="stylesheet" href="standard-ui.css?v=20261112p">
+  <link rel="stylesheet" href="app.css?v=20261112p">
+  <link rel="stylesheet" href="meetings.css?v=20261112p">
+  <link rel="stylesheet" href="contract.css?v=20261112p">
+  <link rel="stylesheet" href="console.css?v=20261112p">
+  <script defer src="js/api.js?v=20261112p"></script>
+  <script defer src="js/ui.js?v=20261112p"></script>
+  <script defer src="js/archive.js?v=20261112p"></script>
+  <script defer src="js/detail-views.js?v=20261112p"></script>
+  <script defer src="js/workbench.js?v=20261112p"></script>
+  <script defer src="js/app.js?v=20261112p"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">跳转至工作区</a>
+  <div id="login-root" class="login-root" hidden></div>
+  <div id="shell" class="ui-shell" hidden>
+    <header class="ui-topbar">
+      <div class="ui-brand">
+        <a href="#meetings" class="ui-logo" aria-label="返回三会智能审查">GT</a>
+        <span class="ui-brand-company">通用技术</span>
+      </div>
+      <div class="ui-topbar-right">
+        <span class="ui-version-tag">V1.0</span>
+        <span class="environment"><span class="indicator"></span>一期工作台</span>
+        <span class="top-divider"></span>
+        <span class="user"><span class="avatar" id="user-avatar">—</span><span id="user-label"></span></span>
+        <button type="button" class="ui-btn" id="logout-btn">退出</button>
+      </div>
+    </header>
+    <div class="app-layout">
+      <button class="ui-btn sidebar-toggle" type="button" id="sidebar-toggle" aria-controls="workspace-sidebar" aria-expanded="true"></button>
+      <aside class="sidebar" id="workspace-sidebar">
+        <div class="sidebar-content" id="sidebar-nav"></div>
+        <div class="sidebar-footer"><span class="indicator"></span>初审服务<span class="service-state" id="service-state">运行正常</span></div>
+      </aside>
+      <main class="ui-main" id="main" tabindex="-1">
+        <div class="content" id="view"></div>
+      </main>
+    </div>
+  </div>
+  <dialog id="overlay" aria-labelledby="dialog-title"></dialog>
+  <div id="toast" class="toast" role="status" hidden></div>
+</body>
+</html>

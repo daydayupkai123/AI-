@@ -1,7 +1,7 @@
 """测试替身：模型判定器、天眼查。"""
 from __future__ import annotations
 
-from core.external import ExternalUnavailable
+from shared.external_lookup import ExternalUnavailable
 
 
 class FakeJudge:
@@ -15,7 +15,7 @@ class FakeJudge:
     def __call__(self, purpose: str, system: str, user: str) -> dict:
         self.calls.append((purpose, system, user))
         if purpose in self.fail or "*" in self.fail:
-            from core.llm.judge import LLMUnavailable
+            from shared.llm.judge import LLMUnavailable
             raise LLMUnavailable(f"测试模拟：{purpose} 模型不可用")
         ans = self.answers.get(purpose)
         if callable(ans):

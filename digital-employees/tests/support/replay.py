@@ -10,12 +10,12 @@ import os
 import sqlite3
 from pathlib import Path
 
-from core.config import DB_PATH, RC_DB_PATH, RUNTIME, STORE
-from core.resource.client import LocalResourceClient
-from core.resource.service import ResourceService
-from core.resource.store import ResourceStore
-from core.sources.contract import Attachment, RequestData
-from core.storage import Store
+from shared.env_config import DB_PATH, RC_DB_PATH, RUNTIME, STORE
+from storage_service.client import LocalResourceClient
+from storage_service.service import ResourceService
+from storage_service.store import ResourceStore
+from shared.source_adapters.contract import Attachment, RequestData
+from shared.task_store import Store
 
 
 def latest_report(request_id: str, db_path: Path = DB_PATH) -> dict | None:
@@ -30,7 +30,7 @@ def latest_report(request_id: str, db_path: Path = DB_PATH) -> dict | None:
 
 def baseline(request_id: str) -> tuple[Path, Path, Path] | None:
     """历史基准 (工作台库, 资料中心库, 存储目录)：DE_REPLAY_RUNTIME 指定的运行目录；否则当前运行数据；
-    当前没有该单的历史报告时（如 tools/reset_runtime.py 清理后），用最近一次清理前的备份。"""
+    当前没有该单的历史报告时（如 tools/ops/reset_runtime.py 清理后），用最近一次清理前的备份。"""
     env = os.environ.get("DE_REPLAY_RUNTIME")
     roots = [Path(env)] if env else sorted((RUNTIME / "backup").glob("reset-*"), reverse=True)
     cands = ([] if env else [(DB_PATH, RC_DB_PATH, STORE)]) + \

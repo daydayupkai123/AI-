@@ -7,7 +7,8 @@ Wants=de-chrome.service de-resource.service
 WorkingDirectory=/data/digital-employees/app
 EnvironmentFile=/data/digital-employees/de.env
 Environment=PYTHONUNBUFFERED=1
-ExecStart=/data/digital-employees/app/.venv/bin/python -m core.api.server
+Environment=PYTHONPATH=/data/digital-employees/app/backend
+ExecStart=/data/digital-employees/app/.venv/bin/python -m workbench_service.server
 Restart=always
 RestartSec=5
 StandardOutput=append:/data/digital-employees/logs/web.log

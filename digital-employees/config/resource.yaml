@@ -1,4 +1,4 @@
-# 资料中心（独立进程）：.venv\Scripts\python.exe -m core.resource.api   → http://127.0.0.1:8091
+# 资料中心（独立进程）：cd backend; ..\.venv\Scripts\python.exe -m storage_service.server   → http://127.0.0.1:8091
 # 工作台与命令行审查经此地址访问资料中心。
 #   http       调用独立运行的资料中心进程（部署形态，默认）
 #   inprocess  在工作台进程内直接运行资料中心代码（单进程调试；测试使用）

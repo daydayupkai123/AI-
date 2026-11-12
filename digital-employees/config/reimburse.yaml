@@ -65,7 +65,7 @@ vehicle_items:
   充电费: [充电, 电费]
   车辆租赁费: [租赁, 租车]
 
-# AST-02 资产档位 → 必备附件（类型代码见 employees/reimburse/materials.py）
+# AST-02 资产档位 → 必备附件（类型代码见 reimburse_review/materials.py）
 asset_required:
   必备: [asset_inbound, asset_request]
   专项: [asset_inbound, asset_request, purchase_contract, internal_request]

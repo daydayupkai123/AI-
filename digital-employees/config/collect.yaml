@@ -57,8 +57,8 @@ sources:
   fincloud:
     enabled: false              # 外网访问被拦截（需 VPN），部署到内网后开启
     lists: []
-  local:                        # 本地事项（.runtime/cases）：客户系统无法访问的场景用样例 / 导入事项走完整的采集与自动审查链路
-    enabled: true
+  local:                        # 本地样例：一期工作台只展示真实采集数据，关闭自动采集与入列
+    enabled: false
     lists:
       - {name: 本地事项·三会, kind: cases, employee: meeting, max: 50, open_detail: true}
       - {name: 本地事项·报销, kind: cases, employee: reimburse, max: 50, open_detail: true}

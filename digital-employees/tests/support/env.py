@@ -3,10 +3,10 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from core.resource.client import LocalResourceClient
-from core.resource.service import ResourceService
-from core.resource.store import ResourceStore
-from core.storage import Store
+from storage_service.client import LocalResourceClient
+from storage_service.service import ResourceService
+from storage_service.store import ResourceStore
+from shared.task_store import Store
 
 
 def temp_store(tmp: Path) -> Store:

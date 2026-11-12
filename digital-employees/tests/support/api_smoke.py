@@ -5,19 +5,19 @@ import time
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0, str(ROOT / "backend"))
 
-from core.sources.local import CASES  # noqa: E402
-from employees.contract import samples as cs  # noqa: E402
-from employees.meeting import samples as ms  # noqa: E402
-from employees.reimburse import samples as rs  # noqa: E402
+from shared.source_adapters.local import CASES  # noqa: E402
+from contract_review import samples as cs  # noqa: E402
+from meeting_review import samples as ms  # noqa: E402
+from reimburse_review import samples as rs  # noqa: E402
 
 for w in (cs.write, ms.write, rs.write):
     w(CASES)
 
 from fastapi.testclient import TestClient  # noqa: E402
 
-from core.api.server import app  # noqa: E402
+from workbench_service.server import app  # noqa: E402
 
 out = {}
 with TestClient(app) as c:

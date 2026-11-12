@@ -1,7 +1,7 @@
-﻿# 本地联调用：资料中心走「客户 OCR 接口」这条链路，但地址指向本机仿真服务（tools/ocr_local_server.py）。
+﻿# 本地联调用：资料中心走「客户 OCR 接口」这条链路，但地址指向本机仿真服务（tools/ops/ocr_local_server.py）。
 # 用法：设置环境变量 DE_OCR_CONFIG=config/ocr.local.yaml 后启动资料中心 / 运行工具；正式配置仍是 config/ocr.yaml。
-#   仿真服务 RapidOCR 后端（带坐标，可高亮）：python tools/ocr_local_server.py --backend rapidocr --port 8092
-#   仿真服务视觉模型后端（Ollama）：        python tools/ocr_local_server.py --backend ollama:qwen25vl-ocr --port 8093
+#   仿真服务 RapidOCR 后端（带坐标，可高亮）：python tools/ops/ocr_local_server.py --backend rapidocr --port 8092
+#   仿真服务视觉模型后端（Ollama）：        python tools/ops/ocr_local_server.py --backend ollama:qwen25vl-ocr --port 8093
 engine: paddleocr_vl
 
 paddleocr_vl:
